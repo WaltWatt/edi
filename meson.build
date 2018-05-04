@@ -19,7 +19,7 @@ executable(
 # test
 testdir = 'test/'
 tests = [
-    'test_output',
+    'test_funct',
 ]
 
 foreach t : tests

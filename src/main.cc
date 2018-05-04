@@ -2,6 +2,6 @@
 
 int main(void)
 {
-	printf("I'm edi, an awesome new editor.\n");
+	puts("I'm edi, an awesome new editor.");
 	return 0;
 }
