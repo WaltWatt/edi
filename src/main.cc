@@ -1,7 +1,9 @@
-#include <cstdio>
+#include "uistd.h"
 
+using namespace edi;
 int main(void)
 {
-	puts("I'm edi, an awesome new editor.");
+	UiStd ui;
+	ui.run();
 	return 0;
 }
