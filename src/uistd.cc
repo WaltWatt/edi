@@ -8,24 +8,70 @@ edi::UiStd::~UiStd() {
 	disableRawMode();
 }
 
+// ToDo: throw exception
+void edi::UiStd::die(const char *s) {
+	perror(s);
+	exit(1);
+}
+
 void edi::UiStd::enableRawMode() {
 	tcgetattr(STDIN_FILENO, &_origTermios);
 	_raw = _origTermios;
-	_raw.c_lflag &= ~(ECHO | ICANON);
+	_raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+	_raw.c_oflag &= ~(OPOST);
+	_raw.c_cflag |= ~(CS8);
+	_raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
+	_raw.c_cc[VMIN] = 0;
+	_raw.c_cc[VTIME] = 1;
 
-	tcsetattr(STDIN_FILENO, TCIFLUSH, &_raw);
+	/*
+	// ToDo: implement:
+	try {
+		tcsetattr(STDIN_FILENO, TCIFLUSH, &_raw);
+	} catch (...) {
+	}
+	*/
+	if (tcsetattr(STDIN_FILENO, TCIFLUSH, &_raw) == -1) {
+		die("tcgetattr");
+	}
 }
 
 void edi::UiStd::disableRawMode() {
-	tcsetattr(STDIN_FILENO, TCSAFLUSH, &_origTermios);
+	/*
+	// ToDo: implement:
+	try {
+		tcsetattr(STDIN_FILENO, TCSAFLUSH, &_origTermios);
+	} catch (...) {
+	}
+	*/
+	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &_origTermios) == -1) {
+		die("tcsetattr");
+	}
 }
 
 void edi::UiStd::run() {
-	while (read(STDIN_FILENO, &_c, 1) == 1 && _c != _quitChar) {
+	while (1) {
+		_c = '\0';
+		/*
+		// ToDo: implement:
+		try {
+			read(STDIN_FILENO, &_c, 1);
+		}
+		catch (...) {
+		}
+		*/
+		if (read(STDIN_FILENO, &_c, 1) == -1 && errno != EAGAIN) {
+			die("read");
+		}
+
 		if (iscntrl(_c)) {
-			printf("%d\n", _c);
+			printf("%d\r\n", _c);
 		} else {
-			printf("%d ('%c')\n", _c, _c);
+			printf("%d ('%c')\r\n", _c, _c);
+		}
+		if (_c == _quitChar) {
+			break;
 		}
 	}
 }
+
