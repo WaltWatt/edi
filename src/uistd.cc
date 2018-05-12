@@ -1,8 +1,6 @@
-#include <cctype>
-#include <cstdio>
 #include "uistd.h"
 
-edi::UiStd::UiStd() {
+edi::UiStd::UiStd() : _quitChar('q')  {
 	enableRawMode();
 }
 
