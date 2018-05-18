@@ -10,19 +10,23 @@
 
 namespace edi {
 class UiStd {
+	enum mode {MODE_NORMAL, MODE_INSERT, MODE_COMMAND};
+	mode _mode;
 	char _c;
+	int _exitCode;
 	const char _quitChar;
 	struct termios _origTermios;
 	struct termios _raw;
+	void exit(const char *msg, int exitCode = 0);
 
 	void enableRawMode();
 	void disableRawMode();
-	void die(const char *s);
+
 public:
 	UiStd();
 	~UiStd();
 
-	void run();
+	int exec();
 }; // class UiStd
 } // namespace edi
 

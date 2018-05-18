@@ -1,6 +1,6 @@
 #include "uistd.h"
 
-edi::UiStd::UiStd() : _quitChar('q')  {
+edi::UiStd::UiStd() : _mode(MODE_NORMAL), _quitChar('q')  {
 	enableRawMode();
 }
 
@@ -8,10 +8,10 @@ edi::UiStd::~UiStd() {
 	disableRawMode();
 }
 
-// ToDo: throw exception
-void edi::UiStd::die(const char *s) {
-	perror(s);
-	exit(1);
+void edi::UiStd::exit(const char *msg, int exitCode)
+{
+	fprintf(exitCode ? stderr : stdout, "%s", msg);
+	_exitCode = exitCode;
 }
 
 void edi::UiStd::enableRawMode() {
@@ -24,44 +24,23 @@ void edi::UiStd::enableRawMode() {
 	_raw.c_cc[VMIN] = 0;
 	_raw.c_cc[VTIME] = 1;
 
-	/*
-	// ToDo: implement:
-	try {
-		tcsetattr(STDIN_FILENO, TCIFLUSH, &_raw);
-	} catch (...) {
-	}
-	*/
 	if (tcsetattr(STDIN_FILENO, TCIFLUSH, &_raw) == -1) {
-		die("tcgetattr");
+		exit("UiStd::enableRawMode(): returned -1", 1);
 	}
 }
 
 void edi::UiStd::disableRawMode() {
-	/*
-	// ToDo: implement:
-	try {
-		tcsetattr(STDIN_FILENO, TCSAFLUSH, &_origTermios);
-	} catch (...) {
-	}
-	*/
 	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &_origTermios) == -1) {
-		die("tcsetattr");
+		exit("UiStd::disableRawMode(): returned -1", 1);
 	}
 }
 
-void edi::UiStd::run() {
-	while (1) {
+int edi::UiStd::exec() {
+	int exitCode = 0;
+	while (!exitCode) {
 		_c = '\0';
-		/*
-		// ToDo: implement:
-		try {
-			read(STDIN_FILENO, &_c, 1);
-		}
-		catch (...) {
-		}
-		*/
 		if (read(STDIN_FILENO, &_c, 1) == -1 && errno != EAGAIN) {
-			die("read");
+			exit("UiStd::exec(): read(): returned -1", 1);
 		}
 
 		if (iscntrl(_c)) {
@@ -73,5 +52,6 @@ void edi::UiStd::run() {
 			break;
 		}
 	}
+	return 0;
 }
 

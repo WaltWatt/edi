@@ -4,6 +4,5 @@ using namespace edi;
 int main(void)
 {
 	UiStd ui;
-	ui.run();
-	return 0;
+	return ui.exec();
 }
