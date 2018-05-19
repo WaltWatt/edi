@@ -36,20 +36,49 @@ void edi::UiStd::disableRawMode() {
 }
 
 int edi::UiStd::exec() {
-	int exitCode = 0;
-	while (!exitCode) {
+	//int exitCode = 0;
+	while (1) {
 		_c = '\0';
 		if (read(STDIN_FILENO, &_c, 1) == -1 && errno != EAGAIN) {
 			exit("UiStd::exec(): read(): returned -1", 1);
 		}
-
-		if (iscntrl(_c)) {
-			printf("%d\r\n", _c);
-		} else {
-			printf("%d ('%c')\r\n", _c, _c);
-		}
-		if (_c == _quitChar) {
-			break;
+		if (_mode == MODE_NORMAL) {
+			if (iscntrl(_c)) {
+				printf("In 'normal mode': ");
+				printf("%d\r\n", _c);
+			} else {
+				printf("In 'normal mode': ");
+				printf("%d ('%c')\r\n", _c, _c);
+			}
+			if (_c == 'i') {
+				_mode = MODE_INSERT;
+			} else if (_c == ':')
+				_mode = MODE_COMMAND;
+		} else if (_mode == MODE_INSERT) {
+			if (iscntrl(_c)) {
+				printf("In 'insert mode': ");
+				printf("%d\r\n", _c);
+			} else {
+				printf("In 'insert mode': ");
+				printf("%d ('%c')\r\n", _c, _c);
+			}
+			if (_c == 27) {
+				_mode = MODE_NORMAL;
+			}
+		} else if (_mode == MODE_COMMAND) {
+			if (iscntrl(_c)) {
+				printf("In 'command mode': ");
+				printf("%d\r\n", _c);
+			} else {
+				printf("In 'command mode': ");
+				printf("%d ('%c')\r\n", _c, _c);
+			}
+			if (_c == 27) {
+				_mode = MODE_NORMAL;
+			}
+			if (_c == _quitChar) {
+				break;
+			}
 		}
 	}
 	return 0;
