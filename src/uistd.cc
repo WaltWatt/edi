@@ -43,42 +43,32 @@ int edi::UiStd::exec() {
 			exit("UiStd::exec(): read(): returned -1", 1);
 		}
 		if (_mode == MODE_NORMAL) {
-			if (iscntrl(_c)) {
-				printf("In 'normal mode': ");
-				printf("%d\r\n", _c);
-			} else {
-				printf("In 'normal mode': ");
-				printf("%d ('%c')\r\n", _c, _c);
-			}
+			printf("In 'normal' mode: ");
 			if (_c == 'i') {
 				_mode = MODE_INSERT;
-			} else if (_c == ':')
+			} 
+			if (_c == ':') {
 				_mode = MODE_COMMAND;
-		} else if (_mode == MODE_INSERT) {
-			if (iscntrl(_c)) {
-				printf("In 'insert mode': ");
-				printf("%d\r\n", _c);
-			} else {
-				printf("In 'insert mode': ");
-				printf("%d ('%c')\r\n", _c, _c);
 			}
+		} else if (_mode == MODE_INSERT) {
+			printf("In 'insert' mode: ");
 			if (_c == 27) {
 				_mode = MODE_NORMAL;
 			}
 		} else if (_mode == MODE_COMMAND) {
-			if (iscntrl(_c)) {
-				printf("In 'command mode': ");
-				printf("%d\r\n", _c);
-			} else {
-				printf("In 'command mode': ");
-				printf("%d ('%c')\r\n", _c, _c);
-			}
+			printf("In 'command' mode: ");
 			if (_c == 27) {
 				_mode = MODE_NORMAL;
 			}
 			if (_c == _quitChar) {
+				printf("%d ('%c')\r\n", _c, _c);
 				break;
 			}
+		}
+		if (iscntrl(_c)) {
+			printf("%d\r\n", _c);
+		} else {
+			printf("%d ('%c')\r\n", _c, _c);
 		}
 	}
 	return 0;
