@@ -24,16 +24,16 @@ class UiStd
 
 	UiMode *_mode;
 
-	char _c;
-	int _exitCode;
-	//const char _quitChar;
 	struct termios _origTermios;
 	struct termios _raw;
 
-	void exit(const char *msg, int exitCode = 0);
+	void die(const char *msg, int exitCode = 1) const;
 
 	void enableRawMode();
 	void disableRawMode();
+	
+	// ToDo: should go to a class called KeyEvent (or something)
+	char readKey() const;
 
 public:
 	UiStd();
