@@ -9,7 +9,8 @@ edi::UiStd::UiStd()
 	enableRawMode();
 }
 
-edi::UiStd::~UiStd() {
+edi::UiStd::~UiStd()
+{
 	disableRawMode();
 	delete _normalMode;
 	delete _commandMode;
@@ -31,7 +32,8 @@ void edi::UiStd::setCommandMode()
 	_mode = _commandMode;
 }
 
-void edi::UiStd::handleKeyEvent() {
+void edi::UiStd::handleKeyEvent()
+{
 	_c = '\0';
 	if (read(STDIN_FILENO, &_c, 1) == -1 && errno != EAGAIN) {
 		exit("UiStd::exec(): read(): returned -1", 1);
@@ -50,7 +52,8 @@ void edi::UiStd::exit(const char *msg, int exitCode)
 	_exitCode = exitCode;
 }
 
-void edi::UiStd::enableRawMode() {
+void edi::UiStd::enableRawMode()
+{
 	tcgetattr(STDIN_FILENO, &_origTermios);
 	_raw = _origTermios;
 	_raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
@@ -65,13 +68,15 @@ void edi::UiStd::enableRawMode() {
 	}
 }
 
-void edi::UiStd::disableRawMode() {
+void edi::UiStd::disableRawMode()
+{
 	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &_origTermios) == -1) {
 		exit("UiStd::disableRawMode(): returned -1", 1);
 	}
 }
 
-int edi::UiStd::exec() {
+int edi::UiStd::exec()
+{
 	while(1) {
 		handleKeyEvent();
 		_mode->processKeyboardEvent(_c, this);

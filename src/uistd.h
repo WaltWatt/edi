@@ -11,13 +11,13 @@
 #include "uimode.h"
 
 namespace edi {
+	class UiModeNormal;
+	class UiModeCommand;
+	class UiModeInsert;
+	class UiMode;
 
-class UiModeNormal;
-class UiModeCommand;
-class UiModeInsert;
-class UiMode;
-
-class UiStd {
+class UiStd
+{
 	UiModeNormal *_normalMode;
 	UiModeCommand *_commandMode;
 	UiModeInsert *_insertMode;

@@ -5,7 +5,6 @@
 
 
 namespace edi {
-
 class UiStd;
 
 class UiMode
