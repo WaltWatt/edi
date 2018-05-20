@@ -8,15 +8,28 @@
 #include <termios.h>
 #include <unistd.h>
 
+#include "uimode.h"
+
 namespace edi {
+
+class UiModeNormal;
+class UiModeCommand;
+class UiModeInsert;
+class UiMode;
+
 class UiStd {
-	enum mode {MODE_NORMAL, MODE_INSERT, MODE_COMMAND};
-	mode _mode;
+	UiModeNormal *_normalMode;
+	UiModeCommand *_commandMode;
+	UiModeInsert *_insertMode;
+
+	UiMode *_mode;
+
 	char _c;
 	int _exitCode;
-	const char _quitChar;
+	//const char _quitChar;
 	struct termios _origTermios;
 	struct termios _raw;
+
 	void exit(const char *msg, int exitCode = 0);
 
 	void enableRawMode();
@@ -26,7 +39,14 @@ public:
 	UiStd();
 	~UiStd();
 
+	void handleKeyEvent();
+	void setNormalMode();
+	void setInsertMode();
+	void setCommandMode();
+
 	int exec();
+
+	void quit();
 }; // class UiStd
 } // namespace edi
 

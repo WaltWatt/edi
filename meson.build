@@ -14,6 +14,7 @@ executable(
     'edi',
     'src/main.cc',
     'src/uistd.cc',
+    'src/uimode.cc',
     #cpp_args : 'O3',
 )
 

@@ -1,12 +1,48 @@
 #include "uistd.h"
 
-edi::UiStd::UiStd() : _mode(MODE_NORMAL), _quitChar('q')  {
+edi::UiStd::UiStd() 
+	: _normalMode(new UiModeNormal()),
+	  _commandMode(new UiModeCommand()),
+	  _insertMode(new UiModeInsert()),
+ 	  _mode(_normalMode)
+{
 	enableRawMode();
 }
 
 edi::UiStd::~UiStd() {
 	disableRawMode();
+	delete _normalMode;
+	delete _commandMode;
+	delete _insertMode;
 }
+
+void edi::UiStd::setNormalMode()
+{
+	_mode = _normalMode;
+}
+
+void edi::UiStd::setInsertMode()
+{
+	_mode = _insertMode;
+}
+
+void edi::UiStd::setCommandMode()
+{
+	_mode = _commandMode;
+}
+
+void edi::UiStd::handleKeyEvent() {
+	_c = '\0';
+	if (read(STDIN_FILENO, &_c, 1) == -1 && errno != EAGAIN) {
+		exit("UiStd::exec(): read(): returned -1", 1);
+	}
+}
+
+// ToDo:
+void edi::UiStd::quit()
+{
+}
+
 
 void edi::UiStd::exit(const char *msg, int exitCode)
 {
@@ -36,41 +72,18 @@ void edi::UiStd::disableRawMode() {
 }
 
 int edi::UiStd::exec() {
-	//int exitCode = 0;
-	while (1) {
-		_c = '\0';
-		if (read(STDIN_FILENO, &_c, 1) == -1 && errno != EAGAIN) {
-			exit("UiStd::exec(): read(): returned -1", 1);
-		}
-		if (_mode == MODE_NORMAL) {
-			printf("In 'normal' mode: ");
-			if (_c == 'i') {
-				_mode = MODE_INSERT;
-			} 
-			if (_c == ':') {
-				_mode = MODE_COMMAND;
-			}
-		} else if (_mode == MODE_INSERT) {
-			printf("In 'insert' mode: ");
-			if (_c == 27) {
-				_mode = MODE_NORMAL;
-			}
-		} else if (_mode == MODE_COMMAND) {
-			printf("In 'command' mode: ");
-			if (_c == 27) {
-				_mode = MODE_NORMAL;
-			}
-			if (_c == _quitChar) {
-				printf("%d ('%c')\r\n", _c, _c);
-				break;
-			}
-		}
+	while(1) {
+		handleKeyEvent();
+		_mode->processKeyboardEvent(_c, this);
 		if (iscntrl(_c)) {
 			printf("%d\r\n", _c);
 		} else {
 			printf("%d ('%c')\r\n", _c, _c);
 		}
+		if (_mode == _commandMode && _c == 'q') {
+			printf("Bye! \r\n");
+			break;
+		}
 	}
 	return 0;
 }
-
