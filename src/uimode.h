@@ -1,11 +1,11 @@
 #ifndef UI_MODE_H
 #define UI_MODE_H
 
-#include "uistd.h"
+#include "uiterm.h"
 
 
 namespace edi {
-class UiStd;
+class UiTerm;
 
 class UiMode
 {
@@ -13,7 +13,7 @@ public:
 	UiMode(){}
 	virtual ~UiMode() {}
 
-	virtual void processKeyboardEvent(char c, UiStd *ui) = 0;
+	virtual void processKeyboardEvent(char c, UiTerm *ui) = 0;
 }; 
 
 
@@ -23,7 +23,7 @@ public:
 	UiModeNormal();
 	virtual ~UiModeNormal();
 
-	void processKeyboardEvent(char c, UiStd *ui);
+	void processKeyboardEvent(char c, UiTerm *ui);
 }; 
 
 
@@ -33,7 +33,7 @@ public:
 	UiModeInsert();
 	virtual ~UiModeInsert();
 
-	void processKeyboardEvent(char c, UiStd *ui);
+	void processKeyboardEvent(char c, UiTerm *ui);
 }; 
 
 
@@ -43,7 +43,7 @@ public:
 	UiModeCommand();
 	virtual ~UiModeCommand();
 
-	void processKeyboardEvent(char c, UiStd *ui);
+	void processKeyboardEvent(char c, UiTerm *ui);
 }; 
 
 } // namespace edi

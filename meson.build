@@ -13,7 +13,7 @@ project(
 executable(
     'edi',
     'src/main.cc',
-    'src/uistd.cc',
+    'src/uiterm.cc',
     'src/uimode.cc',
     #cpp_args : 'O3',
 )

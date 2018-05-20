@@ -8,7 +8,7 @@ edi::UiModeNormal::~UiModeNormal()
 {
 }
 
-void edi::UiModeNormal::processKeyboardEvent(char c, UiStd *ui)
+void edi::UiModeNormal::processKeyboardEvent(char c, UiTerm *ui)
 {
 	if (iscntrl(c)) {
 		printf("In *normal* mode: %d\r\n", c);
@@ -34,7 +34,7 @@ edi::UiModeCommand::~UiModeCommand()
 {
 }
 
-void edi::UiModeCommand::processKeyboardEvent(char c, UiStd *ui)
+void edi::UiModeCommand::processKeyboardEvent(char c, UiTerm *ui)
 {
 	if (iscntrl(c)) {
 		printf("In *command* mode: %d\r\n", c);
@@ -56,7 +56,7 @@ edi::UiModeInsert::~UiModeInsert()
 {
 }
 
-void edi::UiModeInsert::processKeyboardEvent(char c, UiStd *ui)
+void edi::UiModeInsert::processKeyboardEvent(char c, UiTerm *ui)
 {
 	if (iscntrl(c)) {
 		printf("In *insert* mode: %d\r\n", c);

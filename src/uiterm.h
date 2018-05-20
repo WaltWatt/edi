@@ -1,5 +1,5 @@
-#ifndef EDI_UISTD
-#define EDI_UISTD
+#ifndef UITERM_H
+#define UITERM_H
 
 #include <cerrno>
 #include <cctype>
@@ -16,7 +16,7 @@ namespace edi {
 	class UiModeInsert;
 	class UiMode;
 
-class UiStd
+class UiTerm
 {
 	UiModeNormal *_normalMode;
 	UiModeCommand *_commandMode;
@@ -36,8 +36,8 @@ class UiStd
 	char readKey() const;
 
 public:
-	UiStd();
-	~UiStd();
+	UiTerm();
+	~UiTerm();
 
 	void handleKeyEvent();
 	void setNormalMode();
@@ -47,7 +47,7 @@ public:
 	int exec();
 
 	void quit();
-}; // class UiStd
+}; // class UiTerm
 } // namespace edi
 
-#endif // EDI_UISTD
+#endif // UITERM_H

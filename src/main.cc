@@ -1,8 +1,8 @@
-#include "uistd.h"
+#include "uiterm.h"
 
 using namespace edi;
 int main(void)
 {
-	UiStd ui;
+	UiTerm ui;
 	return ui.exec();
 }

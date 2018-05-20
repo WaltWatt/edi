@@ -1,6 +1,6 @@
-#include "uistd.h"
+#include "uiterm.h"
 
-edi::UiStd::UiStd() 
+edi::UiTerm::UiTerm() 
 	: _normalMode(new UiModeNormal()),
 	  _commandMode(new UiModeCommand()),
 	  _insertMode(new UiModeInsert()),
@@ -9,7 +9,7 @@ edi::UiStd::UiStd()
 	enableRawMode();
 }
 
-edi::UiStd::~UiStd()
+edi::UiTerm::~UiTerm()
 {
 	disableRawMode();
 
@@ -18,7 +18,7 @@ edi::UiStd::~UiStd()
 	delete _insertMode;
 }
 
-void edi::UiStd::enableRawMode()
+void edi::UiTerm::enableRawMode()
 {
 	tcgetattr(STDIN_FILENO, &_origTermios);
 	_raw = _origTermios;
@@ -30,53 +30,53 @@ void edi::UiStd::enableRawMode()
 	_raw.c_cc[VTIME] = 1;
 
 	if (tcsetattr(STDIN_FILENO, TCIFLUSH, &_raw) == -1) {
-		die("UiStd::enableRawMode(): returned -1", 1);
+		die("UiTerm::enableRawMode(): returned -1", 1);
 	}
 }
 
-void edi::UiStd::disableRawMode()
+void edi::UiTerm::disableRawMode()
 {
 	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &_origTermios) == -1) {
-		die("UiStd::disableRawMode(): returned -1", 1);
+		die("UiTerm::disableRawMode(): returned -1", 1);
 	}
 }
 
-void edi::UiStd::setNormalMode()
+void edi::UiTerm::setNormalMode()
 {
 	_mode = _normalMode;
 }
 
-void edi::UiStd::setInsertMode()
+void edi::UiTerm::setInsertMode()
 {
 	_mode = _insertMode;
 }
 
-void edi::UiStd::setCommandMode()
+void edi::UiTerm::setCommandMode()
 {
 	_mode = _commandMode;
 }
 
 // ToDo: should go to a class called KeyEvent (or something)
-char edi::UiStd::readKey() const
+char edi::UiTerm::readKey() const
 {
 	int nread;
 	char c;
 	while ((nread = read(STDIN_FILENO, &c, 1)) != 1) {
 		if (nread == -1 && errno != EAGAIN) {
-			die("UiStd::exec(): read(): returned -1", 1);
+			die("UiTerm::exec(): read(): returned -1", 1);
 		}
 	}
 	return c;
 }
 
 // ToDo: replace with throwing exception(?)
-void edi::UiStd::die(const char *msg, int exitCode) const
+void edi::UiTerm::die(const char *msg, int exitCode) const
 {
 	fprintf(exitCode ? stderr : stdout, "%s", msg);
 	exit(exitCode);
 }
 
-int edi::UiStd::exec()
+int edi::UiTerm::exec()
 {
 	while(1) {
 		char c = readKey();
