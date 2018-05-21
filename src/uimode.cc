@@ -45,6 +45,9 @@ void edi::UiModeCommand::processKeyboardEvent(char c, UiTerm *ui)
 		printf("Changing mode to *normal*\r\n");
 		ui->setNormalMode();
 	} 
+	if (c == 'q') {
+		ui->setQuitFlag(true);
+	}
 }
 
 

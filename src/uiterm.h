@@ -18,6 +18,8 @@ namespace edi {
 
 class UiTerm
 {
+	bool _quitFlag;
+
 	UiModeNormal *_normalMode;
 	UiModeCommand *_commandMode;
 	UiModeInsert *_insertMode;
@@ -44,9 +46,9 @@ public:
 	void setInsertMode();
 	void setCommandMode();
 
-	int exec();
+	void setQuitFlag(bool flag);
 
-	void quit();
+	int exec();
 }; // class UiTerm
 } // namespace edi
 

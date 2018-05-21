@@ -1,7 +1,8 @@
 #include "uiterm.h"
 
 edi::UiTerm::UiTerm() 
-	: _normalMode(new UiModeNormal()),
+	: _quitFlag(false),
+	  _normalMode(new UiModeNormal()),
 	  _commandMode(new UiModeCommand()),
 	  _insertMode(new UiModeInsert()),
  	  _mode(_normalMode)
@@ -56,6 +57,10 @@ void edi::UiTerm::setCommandMode()
 	_mode = _commandMode;
 }
 
+void edi::UiTerm::setQuitFlag(bool flag) {
+	_quitFlag = flag;
+}
+
 // ToDo: should go to a class called KeyEvent (or something)
 char edi::UiTerm::readKey() const
 {
@@ -78,16 +83,10 @@ void edi::UiTerm::die(const char *msg, int exitCode) const
 
 int edi::UiTerm::exec()
 {
-	while(1) {
+	while(!_quitFlag) {
 		char c = readKey();
 		_mode->processKeyboardEvent(c, this);
-
-		// ToDo: commands to be processed by _commandMode
-		//       which should send some sort of exit signal to ui
-		if (_mode == _commandMode && c == 'q') {
-			printf("Bye! \r\n");
-			break;
-		}
 	}
+	printf("Bye! \r\n");
 	return 0;
 }
