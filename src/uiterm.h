@@ -29,8 +29,6 @@ class UiTerm
 	struct termios _origTermios;
 	struct termios _raw;
 
-	void die(const char *msg, int exitCode = 1) const;
-
 	void enableRawMode();
 	void disableRawMode();
 	

@@ -3,7 +3,6 @@
 
 #include "uiterm.h"
 
-
 namespace edi {
 class UiTerm;
 

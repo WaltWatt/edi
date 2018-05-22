@@ -1,4 +1,5 @@
 #include "uiterm.h"
+#include "cexception.h"
 
 edi::UiTerm::UiTerm() 
 	: _quitFlag(false),
@@ -31,14 +32,14 @@ void edi::UiTerm::enableRawMode()
 	_raw.c_cc[VTIME] = 1;
 
 	if (tcsetattr(STDIN_FILENO, TCIFLUSH, &_raw) == -1) {
-		die("UiTerm::enableRawMode(): returned -1", 1);
+		throw CException("UiTerm::enableRawMode(): tcsetattr() returned -1");
 	}
 }
 
 void edi::UiTerm::disableRawMode()
 {
 	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &_origTermios) == -1) {
-		die("UiTerm::disableRawMode(): returned -1", 1);
+		throw CException("UiTerm::disableRawMode(): tcsetattr() returned -1");
 	}
 }
 
@@ -68,25 +69,22 @@ char edi::UiTerm::readKey() const
 	char c;
 	while ((nread = read(STDIN_FILENO, &c, 1)) != 1) {
 		if (nread == -1 && errno != EAGAIN) {
-			die("UiTerm::exec(): read(): returned -1", 1);
+			throw CException("UiTerm::readKey(): read() returned -1");
 		}
 	}
 	return c;
 }
 
-// ToDo: replace with throwing exception(?)
-void edi::UiTerm::die(const char *msg, int exitCode) const
-{
-	fprintf(exitCode ? stderr : stdout, "%s", msg);
-	exit(exitCode);
-}
-
 int edi::UiTerm::exec()
 {
-	while(!_quitFlag) {
-		char c = readKey();
-		_mode->processKeyboardEvent(c, this);
+	try {
+		while(!_quitFlag) {
+			char c = readKey();
+			_mode->processKeyboardEvent(c, this);
+		}
+		printf("Bye! \r\n");
+	} catch (CException e) {
+		fprintf(stderr, "%s\r\n", e.what());
 	}
-	printf("Bye! \r\n");
 	return 0;
 }
