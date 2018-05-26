@@ -1,7 +1,7 @@
-#include "uiterm.h"
+#include "tui.h"
 #include "cexception.h"
 
-edi::UiTerm::UiTerm() 
+edi::Tui::Tui() 
 	: _quitFlag(false),
 	  _normalMode(new UiModeNormal()),
 	  _commandMode(new UiModeCommand()),
@@ -11,16 +11,15 @@ edi::UiTerm::UiTerm()
 	enableRawMode();
 }
 
-edi::UiTerm::~UiTerm()
+edi::Tui::~Tui()
 {
 	disableRawMode();
-
 	delete _normalMode;
 	delete _commandMode;
 	delete _insertMode;
 }
 
-void edi::UiTerm::enableRawMode()
+void edi::Tui::enableRawMode()
 {
 	tcgetattr(STDIN_FILENO, &_origTermios);
 	_raw = _origTermios;
@@ -36,34 +35,15 @@ void edi::UiTerm::enableRawMode()
 	}
 }
 
-void edi::UiTerm::disableRawMode()
+void edi::Tui::disableRawMode()
 {
 	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &_origTermios) == -1) {
 		throw CException("UiTerm::disableRawMode(): tcsetattr() returned -1");
 	}
 }
 
-void edi::UiTerm::setNormalMode()
-{
-	_mode = _normalMode;
-}
-
-void edi::UiTerm::setInsertMode()
-{
-	_mode = _insertMode;
-}
-
-void edi::UiTerm::setCommandMode()
-{
-	_mode = _commandMode;
-}
-
-void edi::UiTerm::setQuitFlag(bool flag) {
-	_quitFlag = flag;
-}
-
 // ToDo: should go to a class called KeyEvent (or something)
-char edi::UiTerm::readKey() const
+char edi::Tui::readKey() const
 {
 	int nread;
 	char c;
@@ -75,12 +55,36 @@ char edi::UiTerm::readKey() const
 	return c;
 }
 
-int edi::UiTerm::exec()
+void edi::Tui::setNormalMode()
+{
+	_mode = _normalMode;
+}
+
+void edi::Tui::setInsertMode()
+{
+	_mode = _insertMode;
+}
+
+void edi::Tui::setCommandMode()
+{
+	_mode = _commandMode;
+}
+
+void edi::Tui::handleKeyEvent()
+{
+	_mode->processKeyboardEvent(readKey(), this);
+}
+
+void edi::Tui::setQuitFlag(bool flag) {
+	_quitFlag = flag;
+}
+
+
+int edi::Tui::exec()
 {
 	try {
 		while(!_quitFlag) {
-			char c = readKey();
-			_mode->processKeyboardEvent(c, this);
+			handleKeyEvent();
 		}
 		printf("Bye! \r\n");
 	} catch (CException e) {

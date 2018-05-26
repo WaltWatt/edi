@@ -1,8 +1,8 @@
-#include "uiterm.h"
+#include "tui.h"
 
 using namespace edi;
 int main(void)
 {
-	UiTerm ui;
-	return ui.exec();
+	Tui app;
+	return app.exec();
 }

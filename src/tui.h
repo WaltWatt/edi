@@ -1,5 +1,5 @@
-#ifndef UITERM_H
-#define UITERM_H
+#ifndef TUI_H
+#define TUI_H
 
 #include <cerrno>
 #include <cctype>
@@ -16,9 +16,15 @@ namespace edi {
 	class UiModeInsert;
 	class UiMode;
 
-class UiTerm
+class Tui
 {
 	bool _quitFlag;
+
+	struct termios _origTermios;
+	struct termios _raw;
+	
+	void enableRawMode();
+	void disableRawMode();
 
 	UiModeNormal *_normalMode;
 	UiModeCommand *_commandMode;
@@ -26,18 +32,12 @@ class UiTerm
 
 	UiMode *_mode;
 
-	struct termios _origTermios;
-	struct termios _raw;
-
-	void enableRawMode();
-	void disableRawMode();
-	
 	// ToDo: should go to a class called KeyEvent (or something)
 	char readKey() const;
 
 public:
-	UiTerm();
-	~UiTerm();
+	Tui();
+	~Tui();
 
 	void handleKeyEvent();
 	void setNormalMode();
@@ -45,9 +45,7 @@ public:
 	void setCommandMode();
 
 	void setQuitFlag(bool flag);
-
 	int exec();
-}; // class UiTerm
+}; // class Tui
 } // namespace edi
-
-#endif // UITERM_H
+#endif // TUI_H
