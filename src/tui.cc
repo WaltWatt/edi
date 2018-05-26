@@ -21,24 +21,50 @@ edi::Tui::~Tui()
 
 void edi::Tui::enableRawMode()
 {
-	tcgetattr(STDIN_FILENO, &_origTermios);
-	_raw = _origTermios;
-	_raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
-	_raw.c_oflag &= ~(OPOST);
-	_raw.c_cflag |= ~(CS8);
-	_raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
-	_raw.c_cc[VMIN] = 0;
-	_raw.c_cc[VTIME] = 1;
+	if (tcgetattr(STDIN_FILENO, &_e.origTermios) == -1) {
+		throw CException("Tui::enableRawMode(): tcsetattr() returned -1");
+	}
+	struct termios raw = _e.origTermios;
+	raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+	raw.c_oflag &= ~(OPOST);
+	raw.c_cflag |= ~(CS8);
+	raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
+	raw.c_cc[VMIN] = 0;
+	raw.c_cc[VTIME] = 1;
 
-	if (tcsetattr(STDIN_FILENO, TCIFLUSH, &_raw) == -1) {
-		throw CException("UiTerm::enableRawMode(): tcsetattr() returned -1");
+	if (tcsetattr(STDIN_FILENO, TCIFLUSH, &raw) == -1) {
+		throw CException("Tui::enableRawMode(): tcsetattr() returned -1");
 	}
 }
 
 void edi::Tui::disableRawMode()
 {
-	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &_origTermios) == -1) {
-		throw CException("UiTerm::disableRawMode(): tcsetattr() returned -1");
+	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &_e.origTermios) == -1) {
+		throw CException("Tui::disableRawMode(): tcsetattr() returned -1");
+	}
+}
+
+void edi::Tui::getWindowSize(int *rows, int *cols)
+{
+	struct winsize ws;
+
+	int res = ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
+	if (res == -1) {
+		throw CException("Tui::getWindowSize(): ioctl() returned -1 ");
+	}
+	if (ws.ws_col == 0) {
+		throw CException("Tui::getWindowSize(): ws.ws_col == 0");
+	}
+	*cols = ws.ws_col;
+	*rows = ws.ws_row;
+}
+
+void edi::Tui::initEdi() {
+	try {
+		getWindowSize(&_e.screenrows, &_e.screencols);
+	} catch (CException e) {
+		fprintf(stderr, "***ERROR: %s. Exiting!\r\n", e.what());
+		exit(-1);
 	}
 }
 
@@ -75,6 +101,25 @@ void edi::Tui::handleKeyEvent()
 	_mode->processKeyboardEvent(readKey(), this);
 }
 
+void edi::Tui::cleanScreen() {
+	write(STDOUT_FILENO, "\x1b[2J", 4);
+	write(STDOUT_FILENO, "\x1b[H", 3);
+}
+
+void edi::Tui::drawRows() {
+	int y;
+	for (y = 0; y < _e.screenrows - 2; y++) {
+		write(STDOUT_FILENO, "~\r\n", 3);
+	}
+	write(STDOUT_FILENO, "NORMAL | <Esc>:q<Enter> to quit\r\n", 34);
+}
+
+void edi::Tui::refreshScreen() {
+	cleanScreen();
+	drawRows();
+	write(STDOUT_FILENO, "\x1b[H", 3);
+}
+
 void edi::Tui::setQuitFlag(bool flag) {
 	_quitFlag = flag;
 }
@@ -82,13 +127,17 @@ void edi::Tui::setQuitFlag(bool flag) {
 
 int edi::Tui::exec()
 {
+	initEdi();
 	try {
 		while(!_quitFlag) {
+			refreshScreen();
 			handleKeyEvent();
 		}
-		printf("Bye! \r\n");
+		cleanScreen();
+		printf("Edi says: Bye!\r\n");
 	} catch (CException e) {
-		fprintf(stderr, "%s\r\n", e.what());
+		fprintf(stderr, "***ERROR: %s. Exiting!\r\n", e.what());
+		exit(-1);
 	}
 	return 0;
 }

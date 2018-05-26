@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <termios.h>
 #include <unistd.h>
+#include <sys/ioctl.h>
 
 #include "uimode.h"
 
@@ -20,17 +21,30 @@ class Tui
 {
 	bool _quitFlag;
 
-	struct termios _origTermios;
-	struct termios _raw;
-	
 	void enableRawMode();
 	void disableRawMode();
+
+	struct Screen {
+		int screenrows;
+		int screencols;
+		struct termios origTermios;
+	};
+
+	Screen _e;
 
 	UiModeNormal *_normalMode;
 	UiModeCommand *_commandMode;
 	UiModeInsert *_insertMode;
 
 	UiMode *_mode;
+
+	void cleanScreen();
+	void refreshScreen();
+	void drawRows();
+
+	void getWindowSize(int *rows, int *cols);
+
+	void initEdi();
 
 	// ToDo: should go to a class called KeyEvent (or something)
 	char readKey() const;
