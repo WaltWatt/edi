@@ -1,13 +1,18 @@
+#include <stdexcept>
+
 #include "tui.h"
-#include "cexception.h"
+
+using namespace std;
 
 edi::Tui::Tui() 
 	: _quitFlag(false),
+	  _inRawMode(false),
 	  _normalMode(new UiModeNormal()),
 	  _commandMode(new UiModeCommand()),
 	  _insertMode(new UiModeInsert()),
  	  _mode(_normalMode)
 {
+	printf("Tui() called\n");
 	enableRawMode();
 }
 
@@ -17,30 +22,75 @@ edi::Tui::~Tui()
 	delete _normalMode;
 	delete _commandMode;
 	delete _insertMode;
+	printf("~Tui() called\n");
 }
 
 void edi::Tui::enableRawMode()
 {
-	if (tcgetattr(STDIN_FILENO, &_e.origTermios) == -1) {
-		throw CException("Tui::enableRawMode(): tcsetattr() returned -1");
-	}
-	struct termios raw = _e.origTermios;
-	raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
-	raw.c_oflag &= ~(OPOST);
-	raw.c_cflag |= ~(CS8);
-	raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
-	raw.c_cc[VMIN] = 0;
-	raw.c_cc[VTIME] = 1;
+	if (!_inRawMode) {
+		if (tcgetattr(STDIN_FILENO, &_e.origTermios) == -1) {
+			throw runtime_error(
+					"Tui::enableRawMode(): "\
+					"tcsetattr(tcgetattr(STDIN_FILENO, &_e.origTermios) "\
+					"returned -1");
+		}
+		struct termios raw = _e.origTermios;
+		raw.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+		raw.c_oflag &= ~(OPOST);
+		raw.c_cflag |= ~(CS8);
+		raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
+		raw.c_cc[VMIN] = 0;
+		raw.c_cc[VTIME] = 1;
 
-	if (tcsetattr(STDIN_FILENO, TCIFLUSH, &raw) == -1) {
-		throw CException("Tui::enableRawMode(): tcsetattr() returned -1");
+		if (tcsetattr(STDIN_FILENO, TCIFLUSH, &raw) == -1) {
+			throw runtime_error(
+					"Tui::enableRawMode(): "\
+					"tcsetattr(STDIN_FILENO, TCIFLUSH, &raw) "\
+					"returned -1");
+		}
+		_inRawMode = true;
 	}
 }
 
 void edi::Tui::disableRawMode()
 {
-	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &_e.origTermios) == -1) {
-		throw CException("Tui::disableRawMode(): tcsetattr() returned -1");
+	if (_inRawMode) {
+		if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &_e.origTermios) == -1) {
+			throw runtime_error(
+					"Tui::disableRawMode(): tcsetattr() returned -1");
+		}
+		_inRawMode = false;
+	}
+}
+
+void edi::Tui::getCursorPosition(int *rows, int *cols)
+{
+	char buf[32];
+	unsigned int i = 0;
+
+	if (write(STDERR_FILENO, "\x1b[6n", 4) != 4) {
+		throw runtime_error(
+				"Tui::getCursorPosition(): write() did not return 4");
+	}
+
+	while (i < sizeof(buf) - 1) {
+		if (read(STDERR_FILENO, &buf[i], 1) != 1) {
+			break;
+		}
+		if (buf[i] == 'R') {
+			break;
+		}
+		i++;
+	}
+	buf[i] = '\0';
+
+	if (buf[0] != '\x1b' || buf[1] != '[') {
+		throw runtime_error("Tui::getCursorPosition(): "\
+				            "buf[0] != '\x1b' || buf[1] != '['");
+	}
+	if (sscanf(&buf[2], "%d;%d", rows, cols) != 2) {
+		throw runtime_error(
+				"Tui::getCursorPosition(): sscanf() did not returne 2");
 	}
 }
 

@@ -44,6 +44,7 @@ class Tui
 	void drawRows();
 
 	void getWindowSize(int *rows, int *cols);
+	void getCursorPosition(int *rows, int *cols);
 
 	void initEdi();
 
