@@ -48,23 +48,28 @@ void edi::Tui::getWindowSize(int *rows, int *cols)
 {
 	struct winsize ws;
 
-	int res = ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
-	if (res == -1) {
-		throw CException("Tui::getWindowSize(): ioctl() returned -1 ");
+	if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == -1 || ws.ws_col == 0) {
+		if (write(STDOUT_FILENO, "\x1b[999C\x1b[999B", 12) != 12) {
+			throw runtime_error(
+					"Tui::getWindowSize(): write() did not return 12");
+		}
+		try {
+			getCursorPosition(rows, cols);
+		} catch (runtime_error &e) {
+			throw runtime_error (std::string("Tui::getWindowSize():\n -> ")
+					             + e.what());
+		}
+	} else {
+		*cols = ws.ws_col;
+		*rows = ws.ws_row;
 	}
-	if (ws.ws_col == 0) {
-		throw CException("Tui::getWindowSize(): ws.ws_col == 0");
-	}
-	*cols = ws.ws_col;
-	*rows = ws.ws_row;
 }
 
 void edi::Tui::initEdi() {
 	try {
 		getWindowSize(&_e.screenrows, &_e.screencols);
-	} catch (CException e) {
-		fprintf(stderr, "***ERROR: %s. Exiting!\r\n", e.what());
-		exit(-1);
+	} catch (std::exception &e) {
+		throw runtime_error (std::string("Tui::initEdi():\n -> ") + e.what());
 	}
 }
 
@@ -75,7 +80,7 @@ char edi::Tui::readKey() const
 	char c;
 	while ((nread = read(STDIN_FILENO, &c, 1)) != 1) {
 		if (nread == -1 && errno != EAGAIN) {
-			throw CException("UiTerm::readKey(): read() returned -1");
+			throw runtime_error("UiTerm::readKey(): read() returned -1");
 		}
 	}
 	return c;
@@ -124,10 +129,15 @@ void edi::Tui::setQuitFlag(bool flag) {
 	_quitFlag = flag;
 }
 
-
 int edi::Tui::exec()
 {
-	initEdi();
+	try {
+		initEdi();
+	} catch (std::runtime_error &e) {
+		disableRawMode();
+		fprintf(stderr, "\n*** Tui::exec():\n" " -> %s\n", e.what());
+		return(-1);
+	}
 	try {
 		while(!_quitFlag) {
 			refreshScreen();
@@ -135,9 +145,14 @@ int edi::Tui::exec()
 		}
 		cleanScreen();
 		printf("Edi says: Bye!\r\n");
-	} catch (CException e) {
-		fprintf(stderr, "***ERROR: %s. Exiting!\r\n", e.what());
-		exit(-1);
+	} catch (runtime_error &e) {
+		disableRawMode();
+		fprintf(stderr, "\n*** Tui::Exec():\r\n -> %s\n", e.what());
+		return(-1);
+	} catch (...) {
+		disableRawMode();
+		fprintf(stderr, "\n*** Tui::Exec(): unnknown exception\n");
+		return(-1);
 	}
 	return 0;
 }

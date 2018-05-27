@@ -20,6 +20,7 @@ namespace edi {
 class Tui
 {
 	bool _quitFlag;
+	bool _inRawMode;
 
 	void enableRawMode();
 	void disableRawMode();
