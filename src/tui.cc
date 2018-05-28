@@ -8,8 +8,8 @@ edi::Tui::Tui()
 	: _quitFlag(false),
 	  _inRawMode(false),
 	  _normalMode(new UiModeNormal()),
-	  _commandMode(new UiModeCommand()),
 	  _insertMode(new UiModeInsert()),
+	  _commandMode(new UiModeCommand()),
  	  _mode(_normalMode)
 {
 	printf("Tui() called\n");
@@ -19,9 +19,6 @@ edi::Tui::Tui()
 edi::Tui::~Tui()
 {
 	disableRawMode();
-	delete _normalMode;
-	delete _commandMode;
-	delete _insertMode;
 	printf("~Tui() called\n");
 }
 

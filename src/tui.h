@@ -5,8 +5,10 @@
 #include <cctype>
 #include <cstdio>
 #include <cstdlib>
+#include <memory>
 #include <termios.h>
 #include <unistd.h>
+#include <string>
 #include <sys/ioctl.h>
 
 #include "uimode.h"
@@ -33,14 +35,15 @@ class Tui
 
 	Screen _e;
 
-	UiModeNormal *_normalMode;
-	UiModeCommand *_commandMode;
-	UiModeInsert *_insertMode;
+	std::shared_ptr<UiModeNormal> _normalMode;
+	std::shared_ptr<UiModeInsert> _insertMode;
+	std::shared_ptr<UiModeCommand> _commandMode;
 
-	UiMode *_mode;
+	std::shared_ptr<UiMode> _mode;
 
 	void cleanScreen();
 	void refreshScreen();
+	//void drawRows(std::string ab);
 	void drawRows();
 
 	void getWindowSize(int *rows, int *cols);
