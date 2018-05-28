@@ -10,7 +10,7 @@ edi::Tui::Tui()
 	  _normalMode(new UiModeNormal()),
 	  _insertMode(new UiModeInsert()),
 	  _commandMode(new UiModeCommand()),
- 	  _mode(_normalMode)
+ 	  _mode(_normalMode.get())
 {
 	printf("Tui() called\n");
 	enableRawMode();
@@ -133,19 +133,25 @@ char edi::Tui::readKey() const
 	return c;
 }
 
+/*
+void edi::Tui::setUiMode(std::unique_ptr<edi::UiMode> mode) {
+	_mode = mode.get();
+}
+*/
+
 void edi::Tui::setNormalMode()
 {
-	_mode = _normalMode;
+	_mode = _normalMode.get();
 }
 
 void edi::Tui::setInsertMode()
 {
-	_mode = _insertMode;
+	_mode = _insertMode.get();
 }
 
 void edi::Tui::setCommandMode()
 {
-	_mode = _commandMode;
+	_mode = _commandMode.get();
 }
 
 void edi::Tui::handleKeyEvent()

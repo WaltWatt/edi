@@ -35,11 +35,14 @@ class Tui
 
 	Screen _e;
 
-	std::shared_ptr<UiModeNormal> _normalMode;
-	std::shared_ptr<UiModeInsert> _insertMode;
-	std::shared_ptr<UiModeCommand> _commandMode;
+	std::unique_ptr<UiModeNormal> _normalMode;
+	std::unique_ptr<UiModeInsert> _insertMode;
+	std::unique_ptr<UiModeCommand> _commandMode;
 
-	std::shared_ptr<UiMode> _mode;
+	// A raw pointer here so I can use unique_ptr's rather then shared_ptr's
+	// for modes. Will never call deleate on _mode. I hope.
+	
+	UiMode *_mode;
 
 	void cleanScreen();
 	void refreshScreen();
