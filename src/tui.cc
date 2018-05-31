@@ -174,10 +174,14 @@ void edi::Tui::drawRows(std::string &ab) {
 
 void edi::Tui::refreshScreen() {
 	std::string ab;
+	ab.append("\x1b[?25l");
 	ab.append("\x1b[2J");
 	ab.append("\x1b[H");
+
 	drawRows(ab);
+
 	ab.append("\x1b[H");
+	ab.append("\x1b[?25h");
 
 	write(STDOUT_FILENO, ab.c_str(), ab.size());
 	//write(STDOUT_FILENO, "\x1b[H", 3);
