@@ -167,7 +167,7 @@ void edi::Tui::cleanScreen() {
 void edi::Tui::drawRows(std::string &ab) {
 	int y;
 	for (y = 0; y < _e.screenrows - 2; y++) {
-		ab.append("~\r\n");
+		ab.append("~\x1b[K\r\n");
 	}
 	ab.append("NORMAL | <Esc>:q<Enter> to quit\r\n");
 }
@@ -175,7 +175,6 @@ void edi::Tui::drawRows(std::string &ab) {
 void edi::Tui::refreshScreen() {
 	std::string ab;
 	ab.append("\x1b[?25l");
-	ab.append("\x1b[2J");
 	ab.append("\x1b[H");
 
 	drawRows(ab);
