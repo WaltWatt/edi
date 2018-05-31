@@ -40,14 +40,14 @@ class Tui
 	std::unique_ptr<UiModeCommand> _commandMode;
 
 	// A raw pointer here so I can use unique_ptr's rather then shared_ptr's
-	// for modes. Will never call deleate on _mode. I hope.
-	
+	// for modes. Will never call deleate on _mode (I hope)
 	UiMode *_mode;
 
 	void cleanScreen();
 	void refreshScreen();
-	//void drawRows(std::string ab);
-	void drawRows();
+	void drawRows(std::string &ab);
+	//void drawRows(std::unique_ptr<std::string> ab);
+	//void drawRows();
 
 	void getWindowSize(int *rows, int *cols);
 	void getCursorPosition(int *rows, int *cols);

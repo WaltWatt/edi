@@ -164,18 +164,23 @@ void edi::Tui::cleanScreen() {
 	write(STDOUT_FILENO, "\x1b[H", 3);
 }
 
-void edi::Tui::drawRows() {
+void edi::Tui::drawRows(std::string &ab) {
 	int y;
 	for (y = 0; y < _e.screenrows - 2; y++) {
-		write(STDOUT_FILENO, "~\r\n", 3);
+		ab.append("~\r\n");
 	}
-	write(STDOUT_FILENO, "NORMAL | <Esc>:q<Enter> to quit\r\n", 34);
+	ab.append("NORMAL | <Esc>:q<Enter> to quit\r\n");
 }
 
 void edi::Tui::refreshScreen() {
-	cleanScreen();
-	drawRows();
-	write(STDOUT_FILENO, "\x1b[H", 3);
+	std::string ab;
+	ab.append("\x1b[2J");
+	ab.append("\x1b[H");
+	drawRows(ab);
+	ab.append("\x1b[H");
+
+	write(STDOUT_FILENO, ab.c_str(), ab.size());
+	//write(STDOUT_FILENO, "\x1b[H", 3);
 }
 
 void edi::Tui::setQuitFlag(bool flag) {
