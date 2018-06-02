@@ -18,16 +18,29 @@ executable(
     #cpp_args : 'O3',
 )
 
-# test
-testdir = 'test/'
-tests = [
-    'test_funct',
-]
 
-foreach t : tests
-    _test = executable(
-        t,
-        ['test/main.cc', testdir + t + '.cc'],
-    )
-    test(t, _test)
-endforeach
+gtestdep = dependency('gtest')
+
+testdir = 'test/'
+srcdir  = 'src/ui/tui/'
+
+_test = executable (
+    'tui tests',
+    testdir + 'main.cc',
+    testdir + 'TuiTest.cc',
+    srcdir + 'TSize.cc',
+    dependencies : gtestdep,
+)
+test('tui test', _test)
+# test
+#tests = [
+#    'test_funct',
+#]
+
+#foreach t : tests
+#    _test = executable(
+#        t,
+#        ['test/main.cc', testdir + t + '.cc'],
+#    )
+#    test(t, _test)
+#endforeach
