@@ -167,26 +167,65 @@ void edi::Tui::cleanScreen() {
 void edi::Tui::drawRows(std::string &ab) {
 	int y;
 	for (y = 0; y < _e.screenrows - 2; y++) {
-		ab.append("~\x1b[K\r\n");
+		if (y == _e.screenrows / 3) {
+			// ToDo: remove the literal out of here:
+			std::string welcome = "Edi -- version ";
+			// ToDo: remove the literal out of here:
+			welcome.append("0.0.1");
+			int welcomelen = welcome.size();
+			if (welcomelen > _e.screencols) {
+				welcomelen = _e.screencols;
+			}
+			int padding = (_e.screencols - welcomelen) / 2;
+			if (padding) {
+				ab.append("~");
+				padding--;
+			}
+			while (padding--) {
+				ab.append(" ");
+			}
+			ab.append(welcome + "\x1b[K\r\n");
+		} else {
+			ab.append("~\x1b[K\r\n");
+		}
 	}
-	ab.append("NORMAL | <Esc>:q<Enter> to quit\r\n");
 }
 
-void edi::Tui::refreshScreen() {
+void edi::Tui::drawStatusBar(std::string &ab)
+{
+	ab.append("\x1b[1;7m");
+	int len = 0;
+	std::string mode = " " + _mode->toString();
+	len += mode.size();
+	mode.append("\x1b[0;7m");
+	std::string msg = _mode->getMessage() + " ";
+	len += msg.size();
+	while (len < _e.screencols) {
+		mode.append(" ");
+		len++;
+	}
+	mode.append(msg);
+	ab.append(mode);
+	ab.append("\x1b[m");
+}
+
+void edi::Tui::refreshScreen()
+{
 	std::string ab;
 	ab.append("\x1b[?25l");
 	ab.append("\x1b[H");
 
 	drawRows(ab);
+	drawStatusBar(ab);
 
 	ab.append("\x1b[H");
 	ab.append("\x1b[?25h");
 
 	write(STDOUT_FILENO, ab.c_str(), ab.size());
-	//write(STDOUT_FILENO, "\x1b[H", 3);
 }
 
-void edi::Tui::setQuitFlag(bool flag) {
+void edi::Tui::setQuitFlag(bool flag)
+{
 	_quitFlag = flag;
 }
 

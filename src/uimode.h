@@ -9,14 +9,23 @@ class Tui;
 class UiMode
 {
 public:
-	UiMode(){}
 	virtual ~UiMode() {}
 
 	virtual void processKeyboardEvent(char c, Tui *ui) = 0;
+
+	std::string toString();
+	std::string getMessage();
+
+protected:
+	UiMode(std::string name, std::string msg = "");
+
+private:
+	std::string _mode;
+	std::string _msg;
 }; 
 
 
-class UiModeNormal : public UiMode
+class UiModeNormal : virtual public UiMode
 {
 public:
 	UiModeNormal();

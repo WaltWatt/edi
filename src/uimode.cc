@@ -1,6 +1,23 @@
 #include "uimode.h"
 
+edi::UiMode::UiMode(std::string name, std::string msg)
+	: _mode(name),
+	  _msg(msg)
+{}
+
+std::string edi::UiMode::toString()
+{
+	return _mode;
+}
+
+std::string edi::UiMode::getMessage()
+{
+	return _msg;
+}
+
+
 edi::UiModeNormal::UiModeNormal()
+	:UiMode("NORMAL", "'i' -- INSERT mode | ':' -- COMMAND mode")
 {
 }
 
@@ -10,23 +27,17 @@ edi::UiModeNormal::~UiModeNormal()
 
 void edi::UiModeNormal::processKeyboardEvent(char c, Tui *ui)
 {
-	if (iscntrl(c)) {
-		printf("In *normal* mode: %d\r\n", c);
-	} else {
-		printf("In *normal* mode: %d ('%c')\r\n", c, c);
-	}
 	if (c == 'i') {
-		printf("Changing mode to *insert*\r\n");
 		ui->setInsertMode();
 	} 
 	if (c == ':') {
-		printf("Changing mode to *command*\r\n");
 		ui->setCommandMode();
 	}
 }
 
 
 edi::UiModeCommand::UiModeCommand()
+	:UiMode("COMMAND", "<Esc> -- NORMAL mode | 'q' -- quit")
 {
 }
 
@@ -36,13 +47,7 @@ edi::UiModeCommand::~UiModeCommand()
 
 void edi::UiModeCommand::processKeyboardEvent(char c, Tui *ui)
 {
-	if (iscntrl(c)) {
-		printf("In *command* mode: %d\r\n", c);
-	} else {
-		printf("In *command* mode: %d ('%c')\r\n", c, c);
-	}
 	if (c == 27) {
-		printf("Changing mode to *normal*\r\n");
 		ui->setNormalMode();
 	} 
 	if (c == 'q') {
@@ -52,6 +57,7 @@ void edi::UiModeCommand::processKeyboardEvent(char c, Tui *ui)
 
 
 edi::UiModeInsert::UiModeInsert()
+	:UiMode("INSERT", "<Esc> -- NORMAL mode")
 {
 }
 
@@ -61,13 +67,7 @@ edi::UiModeInsert::~UiModeInsert()
 
 void edi::UiModeInsert::processKeyboardEvent(char c, Tui *ui)
 {
-	if (iscntrl(c)) {
-		printf("In *insert* mode: %d\r\n", c);
-	} else {
-		printf("In *insert* mode: %d ('%c')\r\n", c, c);
-	}
 	if (c == 27) {
-		printf("Changing mode to *normal*\r\n");
 		ui->setNormalMode();
 	} 
 }

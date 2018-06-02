@@ -46,8 +46,7 @@ class Tui
 	void cleanScreen();
 	void refreshScreen();
 	void drawRows(std::string &ab);
-	//void drawRows(std::unique_ptr<std::string> ab);
-	//void drawRows();
+	void drawStatusBar(std::string &ab);
 
 	void getWindowSize(int *rows, int *cols);
 	void getCursorPosition(int *rows, int *cols);
