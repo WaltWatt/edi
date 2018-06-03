@@ -1,11 +1,18 @@
 #include <gmock/gmock.h>
 
-#include "src/ui/tui/TSize.h"
+#include "src/ui/tui/TMainWindow.h"
 
 using namespace tui;
-using namespace testing;
 
-TEST(TSize, Construction)
+TEST(TMainWindow, DefaultConstruction)
 {
-	TSize size;
+	TMainWindow w;
+	ASSERT_TRUE(sizeof(w));
+}
+
+TEST(TMainWindow, GetNumberOfColumns)
+{
+	TMainWindow w;
+	ASSERT_FALSE(w.cols() == 0);
+	ASSERT_TRUE(w.cols() < 500);
 }
