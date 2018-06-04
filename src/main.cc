@@ -1,7 +1,8 @@
 //#include "tui.h"
-#include <cstdio>
+#include <iostream>
 #include "ui/tui/TMainWindow.h"
 
+using namespace std;
 using namespace tui;
 int main(void)
 {
@@ -11,10 +12,12 @@ int main(void)
 	*/
 	try {
 		TMainWindow w;
-		printf("window: number of columns: %d\n", w.cols());
+
+		cout << "main window size: " << w.columns() << " columns and ";
+		cout << w.rows() << " rows." << endl;
 	} catch (std::system_error &e) {
-		perror(e.what());
+		cerr << e.what() << endl;
 	} catch (std::runtime_error &e) {
-		perror(e.what());
+		cerr << e.what() << endl;
 	}
 }
