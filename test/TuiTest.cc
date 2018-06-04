@@ -13,8 +13,8 @@ TEST(TMainWindow, DefaultConstruction)
 TEST(TMainWindow, GetNumberOfColumns)
 {
 	TMainWindow w;
-	ASSERT_FALSE(w.cols() == 0);
-	ASSERT_TRUE(w.cols() < 500);
+	ASSERT_FALSE(w.columns() == 0);
+	ASSERT_TRUE(w.columns() < 500);
 }
 
 TEST(TMainWindow, GetNumberOfRows)

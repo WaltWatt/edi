@@ -8,6 +8,8 @@
 #include <cerrno>
 #include <cstdio>
 
+#include "TSize.h"
+
 namespace tui
 {
 class TMainWindow
@@ -15,12 +17,12 @@ class TMainWindow
 	struct winsize _size;
 
 	void getWindowSize();
-	std::pair<int, int> getCursorPosition();
+	TSize getCursorPosition();
 
 public:
 	TMainWindow();
 
-	int cols() const;
+	int columns() const;
 	int rows() const;
 };
 } // namespace tui
