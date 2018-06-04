@@ -220,7 +220,7 @@ void edi::Tui::refreshScreen()
 
 	ab.append("\x1b[H");
 	ab.append("\x1b[?25h");
-
+std::ios_base::failure& exceptio
 	write(STDOUT_FILENO, ab.c_str(), ab.size());
 }
 

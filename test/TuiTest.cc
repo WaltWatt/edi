@@ -16,3 +16,10 @@ TEST(TMainWindow, GetNumberOfColumns)
 	ASSERT_FALSE(w.cols() == 0);
 	ASSERT_TRUE(w.cols() < 500);
 }
+
+TEST(TMainWindow, GetNumberOfRows)
+{
+	TMainWindow w;
+	ASSERT_FALSE(w.rows() == 0);
+	ASSERT_TRUE(w.rows() < 140);
+}

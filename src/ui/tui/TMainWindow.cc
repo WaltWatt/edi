@@ -24,10 +24,16 @@ int tui::TMainWindow::cols() const
 	return _size.ws_col;
 }
 
+int tui::TMainWindow::rows() const
+{
+	return _size.ws_row;
+}
+
 void tui::TMainWindow::getWindowSize()
 {
 	int ioctl_retv = ioctl(STDIN_FILENO, TIOCGWINSZ, &_size);
 	if (ioctl_retv == -1 || _size.ws_col == 0) {
+	// for testing fallback method:
 	//if (1 || ioctl_retv == -1 || _size.ws_col == 0) {
 		int write_retv = write(STDOUT_FILENO, "\x1b[999C\x1b[999B", 12); 
 		if (write_retv != 12) {
@@ -57,7 +63,6 @@ void tui::TMainWindow::getWindowSize()
 
 pair<int, int> tui::TMainWindow::getCursorPosition()
 {
-
 	char buf[32];
 	unsigned int i = 0;
 	pair<int, int> size;
@@ -96,5 +101,3 @@ pair<int, int> tui::TMainWindow::getCursorPosition()
 
 	return size;
 }
-
-
