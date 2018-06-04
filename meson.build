@@ -14,6 +14,7 @@ executable(
     'edi',
     'src/main.cc',
     'src/ui/tui/TMainWindow.cc',
+    'src/ui/tui/TSize.cc',
     #'src/uimode.cc',
     #cpp_args : 'O3',
 )
@@ -28,7 +29,7 @@ _test = executable (
     'tui tests',
     testdir + 'main.cc',
     testdir + 'TuiTest.cc',
-    #srcdir + 'TSize.cc',
+    srcdir + 'TSize.cc',
     srcdir + 'TMainWindow.cc',
     dependencies : gtestdep,
 )

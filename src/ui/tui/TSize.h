@@ -4,16 +4,17 @@
 namespace tui {
 class TSize
 {
-	int _width;
-	int _height;
+	int _columns;
+	int _rows;
 
 public:
-	TSize(int width = 0, int height = 0);
+	TSize(int columns = 0, int rows = 0);
+	virtual ~TSize();
 
-	int width() const;
-	int height() const;
-	void setWidth(int width);
-	void setHeight(int height);
+	int columns() const;
+	int rows() const;
+	void setColumns(int columns);
+	void setRows(int rows);
 };
 } // namespace tui
 #endif // TUI_TSIZE_H
