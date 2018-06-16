@@ -1,0 +1,50 @@
+Mui (mui) -- modal user interface (lib?)
+----------------------------------------
+Classes:
+- MMainWindow -- modal main window 
+- MWidget     -- modal widget
+- MMainComponent -- modal main widget component
+- MStatusBar -- modal status bar (modal widget`s status bar)
+
+	  ┌─────────────┐<-MMainWindow
+	  │┌───────────┐│  
+	  ││           ││<-MEdit:MWidget
+	  ││           ││<-MEdit
+	  ││           ││
+	  │▐███████████▌│<-MStatusBar (MEditStatusBar)
+	  ├─────────────┤
+	  └─────────────┘<-MCommand
+
+Status bar belongs to the (modal) widget.
+Modal Main Window controls passing events (e.ge key events) to the child components. 
+
+Used for:
+
+(Modal) Editor
+--------------
+Modal, Modular and supporting various editing Models.
+
+Name candidates Edi (edi), Med (med) for (Modal) Editor.
+Short and easy to type
+
+Lean, fast, snappy yet good looking.
+
+Modal and modular. Decouple editor and interface.
+
+Use Scintilla in first go?
+
+Editing Models (dont confuse with 'modes'). I am thinking that it would be good to have
+'vim' model and 'kak' (kakoune) editing models and be able to switch between them.
+Command should be something like 'setModel=vim' or 'setModel=kak'.
+
+Modal File Manager (mfm)
+------------------------
+
+Modal web browser (Modal Internet Explorer: mie)
+------------------------------------------------
+
+Modal email client (mem)
+------------------------
+
+Modal calenar (modal remind mr)
+-------------------------------
